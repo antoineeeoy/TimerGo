@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Dumbbell, Swords, Timer } from "lucide-react";
+import { Columns3, Swords, Timer, UserRound, RotateCcw, Play, Clock3 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import gloves from "@/assets/boxing-gloves.jpg";
 import { Stepper } from "@/components/timergo/Stepper";
 import { SessionScreen } from "@/components/timergo/SessionScreen";
 import { Chrono } from "@/components/timergo/Chrono";
@@ -13,10 +15,10 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TimerGo! — Minuterie Tabata, Rounds et Chrono" },
-      { name: "description", content: "Minuterie sportive mobile : Tabata, rounds de boxe et MMA, chronomètre au centième." },
-      { property: "og:title", content: "TimerGo! — Minuterie sportive" },
-      { property: "og:description", content: "Tabata, rounds de combat et chronomètre, directement dans le navigateur." },
+      { title: "TimerGo! — Tabata, Rounds and Stopwatch" },
+      { name: "description", content: "Sports interval timer for Tabata, boxing and MMA rounds, and a precision stopwatch." },
+      { property: "og:title", content: "TimerGo! — Sports timer" },
+      { property: "og:description", content: "Tabata intervals, combat rounds and a stopwatch, directly in your browser." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -79,48 +81,35 @@ function Index() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] max-w-[480px] flex-col">
-      <header className="px-5 pt-5 pb-3">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight">
-          TimerGo<span className="text-brand">!</span>
-        </h1>
+    <div className="app-shell">
+      <header className="app-header">
+        <h1 className="app-wordmark"><span>TimerGo<span className="text-brand">!</span></span><small>{tab === "chrono" ? "Chrono" : tab}</small></h1>
+        <span className="profile-mark" aria-hidden="true"><UserRound size={20} /></span>
       </header>
-
-      {tab === "chrono" ? (
-        <main className="flex flex-1 flex-col pb-24"><Chrono /></main>
-      ) : (
-        <main className="flex-1 space-y-3 px-5 pb-48">
+      {tab === "chrono" ? <Chrono /> : (
+        <main className="settings-main">
           {tab === "tabata" ? <TabataForm s={tabata} set={setTabata} /> : <RoundsForm s={rounds} set={setRounds} />}
-          <div className="pt-2 text-center">
-            <span className="text-sm uppercase tracking-widest text-muted-foreground">Durée totale </span>
-            <span className="font-display tnum text-3xl font-bold">
-              {fmt(tab === "tabata" ? tabataTotal(tabata) : roundsTotal(rounds))}
-            </span>
+          <div className="total-panel">
+            {tab === "tabata" && <Clock3 className="shrink-0 text-brand" size={28} />}
+            <div className="min-w-0 flex-1">
+              {tab === "rounds" && <div className="total-label text-brand">Session overview</div>}
+              <div className="total-label">Total duration</div>
+              {tab === "tabata" && <div className="total-caption">Warm-up and rests included</div>}
+            </div>
+            <div className="total-value">{fmt(tab === "tabata" ? tabataTotal(tabata) : roundsTotal(rounds))}{tab === "tabata" && <small>MIN</small>}</div>
           </div>
+          <Button className="go-button" onClick={() => go(tab)}><Play /> GO</Button>
         </main>
       )}
-
-      {tab !== "chrono" && (
-        <div className="fixed inset-x-0 bottom-[72px] z-10 mx-auto max-w-[480px] bg-gradient-to-t from-background via-background to-transparent px-5 pt-4 pb-3">
-          <button className="go-button" onClick={() => go(tab)}>GO</button>
-        </div>
-      )}
-
-      <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto grid h-[72px] max-w-[480px] grid-cols-3 border-t border-border bg-background">
+      <nav className="tab-bar" aria-label="Timer modes">
         {([
-          ["tabata", "Tabata", Dumbbell],
+          ["tabata", "Tabata", Columns3],
           ["rounds", "Rounds", Swords],
           ["chrono", "Chrono", Timer],
         ] as const).map(([id, label, Icon]) => (
-          <button
-            key={id}
-            onClick={() => setTab(id)}
-            aria-current={tab === id ? "page" : undefined}
-            className={`flex flex-col items-center justify-center gap-1 font-semibold ${tab === id ? "text-brand" : "text-muted-foreground"}`}
-          >
-            <Icon className="h-6 w-6" />
-            <span className="text-sm">{label}</span>
-          </button>
+          <Button variant="ghost" key={id} onClick={() => setTab(id)} aria-current={tab === id ? "page" : undefined} className="tab-item">
+            <Icon /><span>{label}</span>
+          </Button>
         ))}
       </nav>
     </div>
@@ -131,13 +120,17 @@ function TabataForm({ s, set }: { s: TabataSettings; set: (v: TabataSettings) =>
   const u = (k: keyof TabataSettings) => (v: number) => set({ ...s, [k]: v });
   return (
     <>
-      <Stepper label="Préparation" time value={s.prep} min={0} max={60} step={5} onChange={u("prep")} />
-      <Stepper label="Effort" time value={s.work} min={5} max={600} step={5} onChange={u("work")} />
-      <Stepper label="Repos" time value={s.rest} min={0} max={600} step={5} onChange={u("rest")} />
-      <Stepper label="Répétitions par série" value={s.reps} min={1} max={50} step={1} onChange={u("reps")} />
-      <Stepper label="Séries" value={s.sets} min={1} max={20} step={1} onChange={u("sets")} />
+      <div className="settings-toolbar">
+        <span className="status-pill"><span className="status-dot" />Standard HIIT setup</span>
+        <Button variant="secondary" className="h-8 gap-1 px-2 font-display text-sm uppercase text-muted-foreground" onClick={() => set({ ...TABATA_DEFAULTS })}><RotateCcw />Default</Button>
+      </div>
+      <Stepper label="Preparation" caption="Countdown" tone="prep" time value={s.prep} min={0} max={60} step={5} onChange={u("prep")} />
+      <Stepper label="Work" caption="High intensity" tone="work" time value={s.work} min={5} max={600} step={5} onChange={u("work")} />
+      <Stepper label="Rest" caption="Active recovery" tone="rest" time value={s.rest} min={0} max={600} step={5} onChange={u("rest")} />
+      <Stepper label="Repetitions" caption="Rounds per set" tone="reps" value={s.reps} min={1} max={50} step={1} onChange={u("reps")} />
+      <Stepper label="Sets" caption="Complete blocks" tone="sets" value={s.sets} min={1} max={20} step={1} onChange={u("sets")} />
       {s.sets > 1 && (
-        <Stepper label="Repos entre séries" time value={s.setRest} min={0} max={600} step={5} onChange={u("setRest")} />
+        <Stepper label="Rest between sets" caption="Between blocks" tone="setrest" time value={s.setRest} min={0} max={600} step={5} onChange={u("setRest")} />
       )}
     </>
   );
@@ -148,33 +141,41 @@ function RoundsForm({ s, set }: { s: RoundsSettings; set: (v: RoundsSettings) =>
   const base = SPORT_PRESETS.find((p) => p.id === s.preset);
   return (
     <>
-      <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
+      <div className="sport-chips">
         {SPORT_PRESETS.map((p) => {
           const active = s.preset === p.id && (!s.modified || p.id === "custom");
           return (
-            <button
+            <Button variant="ghost"
               key={p.id}
               onClick={() => set(applyPreset(s, p.id))}
-              className={`h-11 shrink-0 rounded-full px-4 text-sm font-semibold ${active ? "bg-brand text-brand-foreground" : "bg-surface-2 text-foreground"}`}
+              className={`sport-chip ${active ? "bg-brand text-brand-foreground" : "bg-surface text-foreground"}`}
             >
               {p.label}
-            </button>
+            </Button>
           );
         })}
       </div>
+      <div className="preset-summary">
+        <img src={gloves} alt="Boxing gloves in a training gym" width={76} height={76} />
+        <div className="min-w-0">
+          <span className="status-pill"><span className="status-dot" />{s.modified ? "Custom format" : "Standard format"}</span>
+          <strong>{s.rounds} × {fmt(s.roundDuration)} | {base?.label ?? "Custom"}</strong>
+          <p>{fmt(s.recovery)} recovery between rounds</p>
+        </div>
+      </div>
       {s.modified && base && base.id !== "custom" && (
         <div className="flex items-center justify-between gap-2 rounded-xl bg-surface px-4 py-2 text-sm">
-          <span>Personnalisé (base : {base.label})</span>
-          <button onClick={() => set(applyPreset(s, s.preset))} className="h-11 font-semibold text-brand underline">
-            Revenir au préréglage
-          </button>
+          <span>Custom (based on: {base.label})</span>
+          <Button variant="ghost" onClick={() => set(applyPreset(s, s.preset))} className="h-11 font-semibold text-brand underline">
+            Restore preset
+          </Button>
         </div>
       )}
-      <Stepper label="Préparation" time value={s.prep} min={0} max={60} step={5} onChange={u("prep")} />
-      <Stepper label="Durée d'un round" time value={s.roundDuration} min={10} max={900} step={5} onChange={u("roundDuration")} />
-      <Stepper label="Récupération" time value={s.recovery} min={0} max={600} step={5} onChange={u("recovery")} />
-      <Stepper label="Nombre de rounds" value={s.rounds} min={1} max={30} step={1} onChange={u("rounds")} />
-      <Stepper label="Alerte avant fin de round" time zeroLabel="Désactivée" value={s.alert} min={0} max={30} step={5} onChange={u("alert")} />
+      <Stepper label="Preparation" caption="Phase 01" tone="prep" layout="rounds" time value={s.prep} min={0} max={60} step={5} onChange={u("prep")} />
+      <Stepper label="Round duration" caption="Combat" tone="work" layout="rounds" time value={s.roundDuration} min={10} max={900} step={5} onChange={u("roundDuration")} />
+      <Stepper label="Recovery" caption="Rest" tone="rest" layout="rounds" time value={s.recovery} min={0} max={600} step={5} onChange={u("recovery")} />
+      <Stepper label="Rounds" caption="Volume" tone="rounds" layout="rounds" value={s.rounds} min={1} max={30} step={1} onChange={u("rounds")} />
+      <Stepper label="End-of-round alert" caption="Signal" tone="alert" layout="rounds" time zeroLabel="Off" value={s.alert} min={0} max={30} step={5} onChange={u("alert")} />
     </>
   );
 }
