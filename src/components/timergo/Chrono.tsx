@@ -13,7 +13,17 @@ export function Chrono() {
       setNow(performance.now());
       id = requestAnimationFrame(tick);
     });
-    const [digits, hundredths] = fmtChrono(ms).split(".");
+    return () => cancelAnimationFrame(id);
+  }, [c.running]);
+
+  const ms = c.acc + (c.running ? Math.max(0, now - c.start) : 0);
+  const state = c.running ? "running" : c.acc > 0 ? "paused" : "zero";
+  const main = () => {
+    const t = performance.now();
+    setNow(t);
+    setC((s) => (s.running ? { acc: s.acc + (t - s.start), start: t, running: false } : { ...s, start: t, running: true }));
+  };
+  const [digits, hundredths] = fmtChrono(ms).split(".");
 
   return (
     <main className="chrono-main">
