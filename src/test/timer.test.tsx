@@ -13,7 +13,7 @@ describe("timer rules", () => {
     const s = { ...TABATA_DEFAULTS, sets: 2 };
     const p = buildTabata(s);
     expect(p.filter((x) => x.kind === "setrest").length).toBe(1);
-    expect(p[p.length - 1].kind).toBe("work");
+    expect(p[p.length - 1]?.kind).toBe("work");
     expect(phasesTotal(p)).toBe(tabataTotal(s));
   });
   it("MMA preset total 17:10", () => {

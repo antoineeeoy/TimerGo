@@ -77,7 +77,7 @@ export const ROUNDS_DEFAULTS: RoundsSettings = {
 };
 
 export function applyPreset(s: RoundsSettings, id: string): RoundsSettings {
-  const p = SPORT_PRESETS.find((x) => x.id === id) ?? SPORT_PRESETS[0];
+  const p = SPORT_PRESETS.find((x) => x.id === id) ?? SPORT_PRESETS[0]!;
   return { ...s, rounds: p.rounds, roundDuration: p.roundDuration, recovery: p.recovery, preset: p.id, modified: false };
 }
 
@@ -127,7 +127,7 @@ export function phasesTotal(phases: Phase[]): number {
 export function locate(phases: Phase[], elapsed: number) {
   let start = 0;
   for (let i = 0; i < phases.length; i++) {
-    const end = start + phases[i].duration;
+    const end = start + phases[i]!.duration;
     if (elapsed < end) return { index: i, phaseStart: start, remaining: end - elapsed };
     start = end;
   }
