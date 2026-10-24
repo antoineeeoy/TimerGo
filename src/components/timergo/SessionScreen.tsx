@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Pause, Play, SkipForward, Square, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play, SkipForward, Square, Volume2, VolumeX, X, UserRound, Dumbbell, FastForward, Timer } from "lucide-react";
 import { type Phase, type PhaseKind, PHASE_NAMES, fmt, locate, phasesTotal } from "@/lib/timer";
+import { Button } from "@/components/ui/button";
 import { beep, vibrate } from "@/lib/signals";
 
 const PHASE_CLASS: Record<PhaseKind | "pause", string> = {
@@ -120,67 +121,99 @@ export function SessionScreen({ phases, mode, meta, sound, onToggleSound, onExit
   if (finished) {
     const done = mode === "tabata"
       ? [
-          { label: "Répétitions", value: `${(meta.reps ?? 0) * (meta.sets ?? 0)}` },
-          { label: "Séries", value: `${meta.sets}` },
+          { label: "Repetitions", value: `${(meta.reps ?? 0) * (meta.sets ?? 0)}` },
+          { label: "Sets", value: `${meta.sets}` },
         ]
       : [{ label: "Rounds", value: `${meta.rounds}` }];
     return (
       <div className="flex min-h-[100dvh] flex-col justify-between bg-background p-6 animate-in fade-in duration-200">
         <div className="pt-10 text-center">
-          <div className="font-display text-5xl font-extrabold uppercase">Terminé !</div>
-          <p className="mt-2 text-muted-foreground">Bien joué.</p>
+          <div className="font-display text-5xl font-extrabold uppercase">Complete!</div>
+          <p className="mt-2 text-muted-foreground">Well done.</p>
         </div>
         <div className="space-y-3">
           <div className="rounded-2xl bg-surface p-5 text-center">
-            <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Durée réalisée</div>
+            <div className="text-xs font-semibold uppercase  text-muted-foreground">Completed duration</div>
             <div className="font-display tnum text-6xl font-bold">{fmt(total)}</div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {done.map((d) => (
               <div key={d.label} className="rounded-2xl bg-surface p-4 text-center">
-                <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{d.label}</div>
+                <div className="text-xs font-semibold uppercase  text-muted-foreground">{d.label}</div>
                 <div className="font-display tnum text-4xl font-bold">{d.value}</div>
               </div>
             ))}
           </div>
         </div>
         <div className="space-y-3 pb-4">
-          <button onClick={onRestart} className="go-button">Recommencer</button>
-          <button onClick={onExit} className="h-[72px] w-full rounded-2xl bg-surface-2 font-display text-2xl font-bold uppercase">
-            Retour aux réglages
-          </button>
+          <Button variant="ghost" onClick={onRestart} className="go-button">Restart</Button>
+          <Button variant="ghost" onClick={onExit} className="h-[72px] w-full rounded-2xl bg-surface-2 font-display text-2xl font-bold uppercase">
+            Back to settings
+          </Button>
         </div>
       </div>
     );
   }
 
-  const phase = phases[loc.index]!;
+  const phase = phases[loc.index];
+  if (!phase) return null;
   const next = phases[loc.index + 1];
   const counter = mode === "tabata"
-    ? `Répétition ${phase.rep ?? 0}/${meta.reps} · Série ${phase.set ?? 1}/${meta.sets}`
+    ? `Rep ${phase.rep ?? 0}/${meta.reps} · Set ${phase.set ?? 1}/${meta.sets}`
     : `Round ${phase.round ?? 0}/${meta.rounds}`;
   const alertOn = clock.running && phase.kind === "round" && !!meta.alert && loc.remaining <= meta.alert;
   const cls = clock.running ? PHASE_CLASS[phase.kind] : PHASE_CLASS.pause;
+
+  if (phase.kind === "prep") {
+    return (
+      <div className={`prep-shell flex min-h-[100dvh] flex-col ${cls}`}>
+        <header className="session-header">
+          <Button variant="ghost" className="session-close" aria-label="Exit session" onClick={onExit}><X /></Button>
+          <h1>{clock.running ? "Active preparation" : "Preparation paused"}</h1>
+          <span className="profile-mark" aria-hidden="true"><UserRound size={20} /></span>
+        </header>
+        <div className="prep-body">
+          <div className="prep-top">
+            <span className="status-pill"><span className="status-dot" />{mode === "tabata" ? `Set 1 / ${meta.sets}` : `${meta.rounds} rounds`}</span>
+            <Button variant="ghost" onClick={onToggleSound} aria-label={sound ? "Mute sound" : "Enable sound"} className="h-14 w-14 rounded-full bg-overlay p-0">{sound ? <Volume2 className="size-7" /> : <VolumeX className="size-7" />}</Button>
+          </div>
+          <div className="prep-center">
+            <div className="prep-title">{clock.running ? "Preparation" : "Paused"}</div>
+            <div className="prep-time">{fmt(remSec)}</div>
+            {remSec <= 3 ? <div className="flex size-16 items-center justify-center rounded-full border-4 border-current font-display text-4xl">{remSec}</div> : <div className="prep-ready"><Dumbbell />Ready?</div>}
+            <div className="prep-next flex items-center gap-2"><FastForward size={20} /><span>Next: <strong>{next ? `${PHASE_NAMES[next.kind]} ${fmt(next.duration)}` : "FINISH"}</strong></span></div>
+          </div>
+          <div className="prep-progress-label"><span className="flex items-center gap-2"><Timer size={20} />SESSION TIME</span><span>Remaining {fmt(total - elapsed)}</span></div>
+          <div className="h-3 overflow-hidden rounded-full bg-overlay"><div className="h-full bg-current" style={{ width: `${elapsed / total * 100}%` }} /></div>
+          <div className="prep-controls">
+            <Button variant="ghost" onClick={skip} className="prep-control"><SkipForward /><span>Next</span></Button>
+            <Button variant="ghost" onClick={toggle} className="prep-control prep-control-primary">{clock.running ? <Pause /> : <Play />}<span>{clock.running ? "Pause" : "Resume"}</span></Button>
+            <HoldStop onStop={onExit} preparation />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`relative flex min-h-[100dvh] flex-col p-5 transition-colors duration-200 ${cls}`}>
       {alertOn && <div aria-hidden className="pointer-events-none absolute inset-0 border-[10px] border-current animate-alert-blink" />}
       <div className="flex items-center justify-between">
-        <div className="tnum text-sm font-semibold opacity-90">Restant {fmt(total - elapsed)}</div>
-        <button onClick={onToggleSound} aria-label={sound ? "Couper le son" : "Activer le son"} className="flex h-12 w-12 items-center justify-center rounded-full bg-overlay">
+        <div className="tnum text-sm font-semibold opacity-90">Remaining {fmt(total - elapsed)}</div>
+        <Button variant="ghost" onClick={onToggleSound} aria-label={sound ? "Mute sound" : "Enable sound"} className="flex h-12 w-12 items-center justify-center rounded-full bg-overlay">
           {sound ? <Volume2 className="h-6 w-6" /> : <VolumeX className="h-6 w-6" />}
-        </button>
+        </Button>
       </div>
       <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-overlay">
         <div className="h-full bg-current" style={{ width: `${(elapsed / total) * 100}%` }} />
       </div>
 
       <div key={loc.index} className="flex flex-1 flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-200">
-        <div className="font-display text-5xl font-extrabold tracking-wide">
+        <div className="font-display text-5xl font-extrabold ">
           {clock.running ? phase.name : `PAUSE · ${phase.name}`}
         </div>
         <div className="mt-1 text-lg font-semibold opacity-90">{counter}</div>
-        <div className="font-display tnum font-extrabold leading-none" style={{ fontSize: "min(34dvh, 42vw)" }}>
+        <div className="font-display tnum font-extrabold leading-none" style={{ fontSize: "156px" }}>
           {fmt(remSec)}
         </div>
         <div className="h-20">
@@ -191,26 +224,26 @@ export function SessionScreen({ phases, mode, meta, sound, onToggleSound, onExit
           )}
         </div>
         <div className="mt-2 text-lg font-semibold opacity-90">
-          {next ? `Ensuite : ${PHASE_NAMES[next.kind]} ${fmt(next.duration)}` : "Ensuite : FIN"}
+          {next ? `Next: ${PHASE_NAMES[next.kind]} ${fmt(next.duration)}` : "Next: FINISH"}
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-3 pb-2">
         <HoldStop onStop={onExit} />
-        <button onClick={toggle} className="flex h-[72px] flex-col items-center justify-center rounded-2xl bg-overlay font-semibold">
+        <Button variant="ghost" onClick={toggle} className="flex h-[72px] flex-col items-center justify-center rounded-2xl bg-overlay font-semibold">
           {clock.running ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7" />}
-          <span className="text-sm">{clock.running ? "Pause" : "Reprendre"}</span>
-        </button>
-        <button onClick={skip} className="flex h-[72px] flex-col items-center justify-center rounded-2xl bg-overlay font-semibold">
+          <span className="text-sm">{clock.running ? "Pause" : "Resume"}</span>
+        </Button>
+        <Button variant="ghost" onClick={skip} className="flex h-[72px] flex-col items-center justify-center rounded-2xl bg-overlay font-semibold">
           <SkipForward className="h-7 w-7" />
-          <span className="text-sm">Suivante</span>
-        </button>
+          <span className="text-sm">Next</span>
+        </Button>
       </div>
     </div>
   );
 }
 
-function HoldStop({ onStop }: { onStop: () => void }) {
+function HoldStop({ onStop, preparation = false }: { onStop: () => void; preparation?: boolean }) {
   const [holding, setHolding] = useState(false);
   const t = useRef<ReturnType<typeof setTimeout> | null>(null);
   const begin = () => {
@@ -223,14 +256,14 @@ function HoldStop({ onStop }: { onStop: () => void }) {
   };
   const C = 2 * Math.PI * 18;
   return (
-    <button
+    <Button variant="ghost"
       onPointerDown={begin}
       onPointerUp={end}
       onPointerLeave={end}
       onPointerCancel={end}
       onContextMenu={(e) => e.preventDefault()}
-      aria-label="Arrêter (maintenir 1 seconde)"
-      className="relative flex h-[72px] touch-none select-none flex-col items-center justify-center rounded-2xl bg-overlay font-semibold"
+      aria-label="Stop (hold for 1 second)"
+      className={`relative touch-none select-none ${preparation ? "prep-control" : "flex h-[72px] flex-col items-center justify-center rounded-2xl bg-overlay font-semibold"}`}
     >
       <svg className="absolute h-11 w-11 -rotate-90" viewBox="0 0 40 40" aria-hidden style={{ top: 4 }}>
         <circle
@@ -241,7 +274,8 @@ function HoldStop({ onStop }: { onStop: () => void }) {
         />
       </svg>
       <Square className="h-6 w-6" />
-      <span className="text-sm">Arrêter</span>
-    </button>
+      <span className="text-sm">Stop</span>
+      {preparation && <small>Hold 1 s</small>}
+    </Button>
   );
 }
