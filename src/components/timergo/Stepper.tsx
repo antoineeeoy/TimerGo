@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Minus, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { fmt } from "@/lib/timer";
 
 interface Props {
@@ -11,9 +12,12 @@ interface Props {
   onChange: (v: number) => void;
   time?: boolean;
   zeroLabel?: string;
+  caption?: string;
+  tone?: string;
+  layout?: "tabata" | "rounds";
 }
 
-export function Stepper({ label, value, min, max, step, onChange, time, zeroLabel }: Props) {
+export function Stepper({ label, value, min, max, step, onChange, time, zeroLabel, caption, tone = "reps", layout = "tabata" }: Props) {
   const valRef = useRef(value);
   valRef.current = value;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -48,13 +52,19 @@ export function Stepper({ label, value, min, max, step, onChange, time, zeroLabe
   const display = value === 0 && zeroLabel ? zeroLabel : time ? fmt(value) : String(value);
 
   const btn =
-    "flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-foreground active:bg-surface-3 disabled:opacity-30 touch-none select-none";
+    "setting-step";
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-3 py-3">
-      <button
+    <div className={`setting-row setting-${tone} ${layout === "rounds" ? "rounds-row" : ""}`}>
+      <div className="min-w-0">
+        {layout === "rounds" && caption && <div className="setting-caption">{caption}</div>}
+        <div className="setting-label">{label}</div>
+        {layout === "tabata" && caption && <div className="setting-caption">{caption}</div>}
+      </div>
+      <div className="setting-value">{display}</div>
+      <Button variant="ghost"
         type="button"
-        aria-label={`Diminuer ${label}`}
+        aria-label={`Decrease ${label}`}
         className={btn}
         disabled={value <= min}
         onPointerDown={(e) => { e.preventDefault(); start(-1); }}
@@ -64,14 +74,10 @@ export function Stepper({ label, value, min, max, step, onChange, time, zeroLabe
         onContextMenu={(e) => e.preventDefault()}
       >
         <Minus className="h-6 w-6" />
-      </button>
-      <div className="min-w-0 flex-1 text-center">
-        <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</div>
-        <div className="font-display tnum text-4xl font-bold leading-tight">{display}</div>
-      </div>
-      <button
+      </Button>
+      <Button variant="ghost"
         type="button"
-        aria-label={`Augmenter ${label}`}
+        aria-label={`Increase ${label}`}
         className={btn}
         disabled={value >= max}
         onPointerDown={(e) => { e.preventDefault(); start(1); }}
@@ -81,7 +87,7 @@ export function Stepper({ label, value, min, max, step, onChange, time, zeroLabe
         onContextMenu={(e) => e.preventDefault()}
       >
         <Plus className="h-6 w-6" />
-      </button>
+      </Button>
     </div>
   );
 }

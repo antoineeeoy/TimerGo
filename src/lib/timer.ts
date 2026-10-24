@@ -10,12 +10,12 @@ export interface Phase {
 }
 
 export const PHASE_NAMES: Record<PhaseKind, string> = {
-  prep: "PRÉPARATION",
-  work: "EFFORT",
-  rest: "REPOS",
-  setrest: "REPOS SÉRIE",
+  prep: "PREPARATION",
+  work: "WORK",
+  rest: "REST",
+  setrest: "SET REST",
   round: "ROUND",
-  recovery: "RÉCUPÉRATION",
+  recovery: "RECOVERY",
 };
 
 export interface TabataSettings {
@@ -55,15 +55,15 @@ export interface SportPreset {
 }
 
 export const SPORT_PRESETS: SportPreset[] = [
-  { id: "boxe-amateur", label: "Boxe amateur", rounds: 3, roundDuration: 180, recovery: 60 },
-  { id: "boxe-pro", label: "Boxe pro", rounds: 12, roundDuration: 180, recovery: 60 },
+  { id: "boxe-amateur", label: "Amateur boxing", rounds: 3, roundDuration: 180, recovery: 60 },
+  { id: "boxe-pro", label: "Pro boxing", rounds: 12, roundDuration: 180, recovery: 60 },
   { id: "mma", label: "MMA", rounds: 3, roundDuration: 300, recovery: 60 },
-  { id: "mma-main", label: "MMA combat principal", rounds: 5, roundDuration: 300, recovery: 60 },
-  { id: "muay-thai", label: "Muay-thaï", rounds: 5, roundDuration: 180, recovery: 120 },
-  { id: "kick", label: "Kick-boxing", rounds: 3, roundDuration: 120, recovery: 60 },
-  { id: "lutte", label: "Lutte", rounds: 2, roundDuration: 180, recovery: 30 },
+  { id: "mma-main", label: "MMA main event", rounds: 5, roundDuration: 300, recovery: 60 },
+  { id: "muay-thai", label: "Muay Thai", rounds: 5, roundDuration: 180, recovery: 120 },
+  { id: "kick", label: "Kickboxing", rounds: 3, roundDuration: 120, recovery: 60 },
+  { id: "lutte", label: "Wrestling", rounds: 2, roundDuration: 180, recovery: 30 },
   { id: "fitness", label: "Fitness / circuit", rounds: 6, roundDuration: 45, recovery: 15 },
-  { id: "custom", label: "Personnalisé", rounds: 3, roundDuration: 180, recovery: 60 },
+  { id: "custom", label: "Custom", rounds: 3, roundDuration: 180, recovery: 60 },
 ];
 
 export const ROUNDS_DEFAULTS: RoundsSettings = {

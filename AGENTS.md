@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- TimerGo presentation uses shared CSS layout classes and the existing Button component; keep session timing and settings logic separate from visual-only redesigns.
