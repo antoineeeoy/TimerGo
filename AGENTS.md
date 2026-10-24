@@ -9,4 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- TimerGo presentation uses shared CSS layout classes and the existing Button component; keep session timing and settings logic separate from visual-only redesigns.
+- TimerGo presentation uses shared CSS layout classes and the existing Button component; SessionViews renders session states separately from SessionScreen timing and signals so visual redesigns preserve the engine.
