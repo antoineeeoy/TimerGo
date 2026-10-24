@@ -34,7 +34,7 @@ export function SessionScreen({ phases, mode, meta, sound, onToggleSound, onExit
   const elapsed = elapsedMs / 1000;
   const finished = elapsed >= total;
   const loc = locate(phases, elapsed);
-  const phase = phases[loc.index];
+  const curPhase = phases[loc.index];
   const remSec = Math.ceil(loc.remaining - 1e-6);
 
   // Render loop
@@ -94,12 +94,12 @@ export function SessionScreen({ phases, mode, meta, sound, onToggleSound, onExit
       prevSec.current = remSec;
       if (remSec <= 3 && remSec >= 1) play(660, 0.1);
     }
-    if (phase?.kind === "round" && meta.alert && remSec <= meta.alert && alerted.current !== loc.index && remSec > 3) {
+    if (curPhase?.kind === "round" && meta.alert && remSec <= meta.alert && alerted.current !== loc.index && remSec > 3) {
       alerted.current = loc.index;
       vibrate(120);
       play(1200, 0.12);
     }
-  }, [finished, loc.index, remSec, phase, meta.alert, phases.length]);
+  }, [finished, loc.index, remSec, meta.alert, phases.length, curPhase]);
 
   const toggle = () => {
     const t = performance.now();
@@ -154,6 +154,7 @@ export function SessionScreen({ phases, mode, meta, sound, onToggleSound, onExit
     );
   }
 
+  const phase = phases[loc.index]!;
   const next = phases[loc.index + 1];
   const counter = mode === "tabata"
     ? `Répétition ${phase.rep ?? 0}/${meta.reps} · Série ${phase.set ?? 1}/${meta.sets}`
