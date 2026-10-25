@@ -2,7 +2,7 @@ TimerGo!
 
 Minuteur sportif pour l'entraînement : intervalles Tabata, rounds de boxe et de MMA, et chronomètre.
 
-Essayer l'application : https://screenshot-interface-mirror.lovable.app
+Essayer l'application : https://timergo.lovable.app
 
 Aperçu de TimerGo!
 
