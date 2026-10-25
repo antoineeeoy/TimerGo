@@ -4,11 +4,10 @@ Minuteur sportif pour l'entraînement : intervalles Tabata, rounds de boxe et de
 
 **Essayer l'application : https://timergo.lovable.app**
 
-![Aperçu de TimerGo!](Capture d'écran 2026-10-25 185740.png)
-![Aperçu de TimerGo tabata!](Capture d'écran 2026-10-25 185811.png)
-![Aperçu de TimerGo chrono !](Capture d'écran 2026-10-25 185825.png)
-![Aperçu de TimerGo boxe!](Capture d'écran 2026-10-25 185833.png)
-
+![Accueil de TimerGo!](<Capture d'écran 2026-10-25 185740.png>)
+![Mode Tabata](<Capture d'écran 2026-10-25 185811.png>)
+![Chronomètre](<Capture d'écran 2026-10-25 185825.png>)
+![Rounds de boxe](<Capture d'écran 2026-10-25 185833.png>)
 ## Fonctionnalités
 
 - **Tabata** : temps de préparation, de travail et de récupération, nombre de répétitions et de séries, avec la durée totale de la séance calculée automatiquement.
