@@ -1,26 +1,37 @@
-# Screenshot Interface Mirror
+TimerGo!
 
-Implement exactly the screenshot and nothing else
+Minuteur sportif pour l'entraînement : intervalles Tabata, rounds de boxe et de MMA, et chronomètre.
 
-This project was built with [Lovable](https://lovable.dev).
+Essayer l'application : https://screenshot-interface-mirror.lovable.app
 
-**Live app**: https://screenshot-interface-mirror.lovable.app
+Aperçu de TimerGo!
 
-## Build with Lovable
+Fonctionnalités
+Tabata : temps de préparation, de travail et de récupération, nombre de répétitions et de séries, avec la durée totale de la séance calculée automatiquement.
+Rounds de combat : enchaînement de rounds et de temps de repos, pour la boxe ou le MMA.
+Chronomètre classique.
+Technologies
+React et TypeScript
+Vite
+TanStack Router
+Tailwind CSS et composants shadcn/ui
+Vitest pour les tests
+Comment il a été réalisé
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/ebc741e3-c043-4d76-b974-057994ec6ed3).
+TimerGo! a été conçu avec Lovable, un outil de création d'applications assisté par l'intelligence artificielle. J'ai défini les fonctionnalités et l'interface, puis fait évoluer l'application étape par étape. Ce projet m'a permis de découvrir l'écosystème React et TypeScript.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+Lancer le projet sur son ordinateur
 
-## Development
+Il faut Node.js installé.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+bash
+git clone https://github.com/antoineeeoy/TimerGo.git
+cd TimerGo
+npm install
 npm run dev
-```
+
+L'application s'ouvre ensuite à l'adresse indiquée dans le terminal.
+
+Auteur
+
+Antoine USO CHEA, étudiant en L3 Informatique à l'Université Gustave Eiffel.
