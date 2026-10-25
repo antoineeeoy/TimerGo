@@ -5,9 +5,9 @@ Minuteur sportif pour l'entraînement : intervalles Tabata, rounds de boxe et de
 **Essayer l'application : https://timergo.lovable.app**
 
 ![Aperçu de TimerGo!](Capture d'écran 2026-10-25 185740.png)
-![Aperçu de TimerGo!](Capture d'écran 2026-10-25 185811.png)
-![Aperçu de TimerGo!](Capture d'écran 2026-10-25 185825.png)
-![Aperçu de TimerGo!](Capture d'écran 2026-10-25 185833.png)
+![Aperçu de TimerGo tabata!](Capture d'écran 2026-10-25 185811.png)
+![Aperçu de TimerGo chrono !](Capture d'écran 2026-10-25 185825.png)
+![Aperçu de TimerGo boxe!](Capture d'écran 2026-10-25 185833.png)
 
 ## Fonctionnalités
 
