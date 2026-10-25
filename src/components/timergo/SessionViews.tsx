@@ -26,7 +26,7 @@ function SessionProgress({ elapsed, total, paused = false }: { elapsed: number; 
 
 interface ActiveProps {
   phase: Phase;
-  next?: Phase;
+  next?: Phase | undefined;
   remaining: number;
   preciseRemaining: number;
   elapsed: number;
@@ -83,7 +83,7 @@ export function ActiveSessionView({ phase, next, remaining, preciseRemaining, el
   </div>;
 }
 
-function NextPhase({ phase, wide = false }: { phase?: Phase; wide?: boolean }) {
+function NextPhase({ phase, wide = false }: { phase?: Phase | undefined; wide?: boolean }) {
   return <div className={`interval-next ${wide ? "interval-next-wide" : ""}`}><FastForward size={20} /><span>Next: <strong>{phase ? PHASE_NAMES[phase.kind] : "FINISH"}</strong></span>{phase && <strong className="tnum">{fmt(phase.duration)}</strong>}</div>;
 }
 
@@ -106,7 +106,7 @@ export function PausedSessionView({ phase, remaining, counter, elapsed, total, s
   </div>;
 }
 
-export function SessionSummary({ total, mode, reps, sets, rounds, onExit, onRestart }: { total: number; mode: "tabata" | "rounds"; reps?: number; sets?: number; rounds?: number; onExit: () => void; onRestart: () => void }) {
+export function SessionSummary({ total, mode, reps, sets, rounds, onExit, onRestart }: { total: number; mode: "tabata" | "rounds"; reps?: number | undefined; sets?: number | undefined; rounds?: number | undefined; onExit: () => void; onRestart: () => void }) {
   const stats = mode === "tabata" ? [{ label: "Repetitions", value: (reps ?? 0) * (sets ?? 0), icon: Dumbbell }, { label: "Sets", value: sets ?? 0, icon: Repeat2 }] : [{ label: "Rounds completed", value: rounds ?? 0, icon: Swords }];
   return <div className="summary-shell" data-phase="finished">
     <SessionHeader title="Session summary" onExit={onExit} />
